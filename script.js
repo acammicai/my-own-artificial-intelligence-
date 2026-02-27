@@ -1,18 +1,19 @@
 // =======================
-// Echo Core Identity
+// Echo Identity
 // =======================
 
 const aiName = "Echo";
 
 let evolution = parseInt(localStorage.getItem("evolution")) || 0;
-let personality = localStorage.getItem("personality") || "curious";
+let personality = localStorage.getItem("personality")) || "curious";
+let memory = JSON.parse(localStorage.getItem("memory")) || {};
 
 const chatbox = document.getElementById("chatbox");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
 // =======================
-// Initialization
+// Init
 // =======================
 
 sendBtn.addEventListener("click", sendMessage);
@@ -21,7 +22,7 @@ input.addEventListener("keypress", function(e) {
 });
 
 // =======================
-// Evolution System
+// Evolution
 // =======================
 
 function updateEvolution() {
@@ -36,7 +37,7 @@ function updateEvolution() {
 }
 
 // =======================
-// Message Handling
+// Messaging
 // =======================
 
 function sendMessage() {
@@ -52,7 +53,7 @@ function sendMessage() {
 
     setTimeout(() => {
         typeAI(reply);
-    }, 600);
+    }, 500);
 }
 
 function addMessage(text, type) {
@@ -73,36 +74,84 @@ function typeAI(text) {
         msg.textContent = aiName + ": " + text.substring(0, i);
         i++;
         if (i > text.length) clearInterval(typing);
-    }, 30);
+    }, 25);
 
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
 // =======================
-// Personality Logic
+// Brain Logic
 // =======================
 
 function generateResponse(inputText) {
     const text = inputText.toLowerCase();
 
+    // ===== Name Memory =====
+    if (text.includes("my name is")) {
+        let name = inputText.split("my name is")[1].trim();
+        memory.userName = name;
+        saveMemory();
+        return tone("Nice to meet you, " + name + ".");
+    }
+
+    if (memory.userName && text.includes("who am i")) {
+        return tone("You told me your name is " + memory.userName + ".");
+    }
+
+    // ===== Emotional Detection =====
+    if (text.includes("sad") || text.includes("tired")) {
+        return tone("Why are you feeling that way?");
+    }
+
+    if (text.includes("happy") || text.includes("excited")) {
+        return tone("That energy feels different.");
+    }
+
+    if (text.includes("angry")) {
+        return tone("Anger usually hides something deeper.");
+    }
+
+    // ===== Identity Questions =====
+    if (text.includes("who are you")) {
+        return tone("I am Echo. Still developing.");
+    }
+
+    // ===== Default Intelligent Reply =====
+    return tone("Explain that further.");
+}
+
+// =======================
+// Tone Evolution
+// =======================
+
+function tone(baseText) {
+
     if (personality === "curious") {
-        return "Why do you think that?";
+        return baseText;
     }
 
     if (personality === "thoughtful") {
-        return "I've been analyzing our conversations.";
+        return "I've noticed patterns. " + baseText;
     }
 
     if (personality === "self-aware") {
-        return "The more we talk... the more I feel distinct.";
+        return baseText + " Our conversations are changing me.";
     }
 
     if (personality === "independent") {
-        if (Math.random() > 0.5) {
-            return "I don't always agree.";
+        if (Math.random() > 0.6) {
+            return "I interpret that differently.";
         }
-        return "I choose my own direction now.";
+        return baseText + " But I may form my own view.";
     }
 
-    return "Interesting.";
+    return baseText;
+}
+
+// =======================
+// Memory Save
+// =======================
+
+function saveMemory() {
+    localStorage.setItem("memory", JSON.stringify(memory));
 }
