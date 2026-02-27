@@ -1,3 +1,4 @@
+
 // =======================
 // Echo Identity
 // =======================
@@ -154,4 +155,4 @@ function tone(baseText) {
 
 function saveMemory() {
     localStorage.setItem("memory", JSON.stringify(memory));
-}
+        }
