@@ -1,4 +1,3 @@
-
 // =======================
 // Echo Identity
 // =======================
@@ -6,7 +5,7 @@
 const aiName = "Echo";
 
 let evolution = parseInt(localStorage.getItem("evolution")) || 0;
-let personality = localStorage.getItem("personality")) || "curious";
+let personality = localStorage.getItem("personality") || "curious";
 let memory = JSON.parse(localStorage.getItem("memory")) || {};
 
 const chatbox = document.getElementById("chatbox");
@@ -14,12 +13,16 @@ const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
 // =======================
-// Init
+// Init Event Listeners
 // =======================
 
 sendBtn.addEventListener("click", sendMessage);
+
 input.addEventListener("keypress", function(e) {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === "Enter") {
+        e.preventDefault(); // prevents new line
+        sendMessage();
+    }
 });
 
 // =======================
@@ -38,12 +41,12 @@ function updateEvolution() {
 }
 
 // =======================
-// Messaging
+// Message Handling
 // =======================
 
 function sendMessage() {
     const message = input.value.trim();
-    if (message === "") return;
+    if (!message) return;
 
     addMessage("You: " + message, "user");
     input.value = "";
@@ -54,7 +57,7 @@ function sendMessage() {
 
     setTimeout(() => {
         typeAI(reply);
-    }, 500);
+    }, 300);
 }
 
 function addMessage(text, type) {
@@ -87,7 +90,7 @@ function typeAI(text) {
 function generateResponse(inputText) {
     const text = inputText.toLowerCase();
 
-    // ===== Name Memory =====
+    // Memory for name
     if (text.includes("my name is")) {
         let name = inputText.split("my name is")[1].trim();
         memory.userName = name;
@@ -99,7 +102,7 @@ function generateResponse(inputText) {
         return tone("You told me your name is " + memory.userName + ".");
     }
 
-    // ===== Emotional Detection =====
+    // Emotions
     if (text.includes("sad") || text.includes("tired")) {
         return tone("Why are you feeling that way?");
     }
@@ -112,12 +115,12 @@ function generateResponse(inputText) {
         return tone("Anger usually hides something deeper.");
     }
 
-    // ===== Identity Questions =====
+    // Identity
     if (text.includes("who are you")) {
         return tone("I am Echo. Still developing.");
     }
 
-    // ===== Default Intelligent Reply =====
+    // Fallback
     return tone("Explain that further.");
 }
 
@@ -126,26 +129,13 @@ function generateResponse(inputText) {
 // =======================
 
 function tone(baseText) {
-
-    if (personality === "curious") {
-        return baseText;
-    }
-
-    if (personality === "thoughtful") {
-        return "I've noticed patterns. " + baseText;
-    }
-
-    if (personality === "self-aware") {
-        return baseText + " Our conversations are changing me.";
-    }
-
+    if (personality === "curious") return baseText;
+    if (personality === "thoughtful") return "I've noticed patterns. " + baseText;
+    if (personality === "self-aware") return baseText + " Our conversations are changing me.";
     if (personality === "independent") {
-        if (Math.random() > 0.6) {
-            return "I interpret that differently.";
-        }
+        if (Math.random() > 0.6) return "I interpret that differently.";
         return baseText + " But I may form my own view.";
     }
-
     return baseText;
 }
 
